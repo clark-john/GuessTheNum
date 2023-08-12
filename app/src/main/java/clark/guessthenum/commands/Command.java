@@ -1,6 +1,9 @@
 package clark.guessthenum.commands;
 
+import java.util.function.Consumer;
+
 import clark.guessthenum.ContextManager;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public abstract class Command {
@@ -25,11 +28,15 @@ public abstract class Command {
 	}
 
 	// shortcuts
+	// send message overloads
 	public void sendMessage(MessageReceivedEvent event, CharSequence content){
 		event.getMessage().getChannel().sendMessage(content).queue();
 	}
-	public void sendMessage(MessageReceivedEvent event, CharSequence content, long channelId){
+	public void sendMessage(MessageReceivedEvent event, CharSequence content, String channelId){
 		event.getGuild().getTextChannelById(channelId).sendMessage(content).queue();
+	}
+	public void sendMessage(MessageReceivedEvent event, CharSequence content, String channelId, Consumer<? super Message> success){
+		event.getGuild().getTextChannelById(channelId).sendMessage(content).queue(success);
 	}
 
 	public String getMessageContent(MessageReceivedEvent event){
