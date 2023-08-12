@@ -11,6 +11,10 @@ public class Config {
 		this.attempts = attempts;
 	}
 
+	public static Config defaults(){
+		return new Config(1, 100, 10);
+	}
+
 	public String toString(){
 		return String.format(
 			"Config{min=%d,max=%d,attempts=%d}", 

@@ -44,7 +44,7 @@ public class ConfigManager {
 			String content = readJsonFile();
 
 			var config = gson.fromJson(content, mapType);
-			config.putIfAbsent(id, new Config(1, 100, 10));
+			config.putIfAbsent(id, Config.defaults());
 
 			writeContentsToFile(gson.toJson(config));
 
