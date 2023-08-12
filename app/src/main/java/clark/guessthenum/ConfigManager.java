@@ -2,6 +2,7 @@ package clark.guessthenum;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -10,9 +11,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class ConfigManager {
-	private Charset utf8 = Charset.forName("UTF-8");
-	private Gson gson;
-	private TypeToken<Map<String, Config>> mapType = new TypeToken<>(){};
+	private final Charset utf8 = Charset.forName("UTF-8");
+	private final Gson gson;
+	private final Path configFile = Paths.get("./config.json");
+	private final TypeToken<Map<String, Config>> mapType = new TypeToken<>(){};
 
 	public ConfigManager(){
 		gson = new GsonBuilder()
@@ -23,11 +25,11 @@ public class ConfigManager {
 	}
 
 	private String readJsonFile() throws Exception {
-		return Files.readString(Paths.get("./config.json"), utf8);
+		return Files.readString(configFile, utf8);
 	}
 
 	private void writeContentsToFile(String content) throws Exception {
-		Files.writeString(Paths.get("./config.json"), content, utf8);
+		Files.writeString(configFile, content, utf8);
 	}
 
 	public Config loadFromGuildId(String id) {
