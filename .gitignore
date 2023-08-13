@@ -8,4 +8,4 @@ bin
 
 # bot things
 config.json
-.session
+app.db

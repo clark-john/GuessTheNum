@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class ConfigManager {
@@ -17,11 +16,7 @@ public class ConfigManager {
 	private final TypeToken<Map<String, Config>> mapType = new TypeToken<>(){};
 
 	public ConfigManager(){
-		gson = new GsonBuilder()
-			.setPrettyPrinting()
-			.serializeNulls()
-			.disableInnerClassSerialization()
-			.create();
+		gson = GetGson.get();
 	}
 
 	private String readJsonFile() throws Exception {
@@ -47,6 +42,20 @@ public class ConfigManager {
 
 			var config = gson.fromJson(content, mapType);
 			config.putIfAbsent(id, Config.defaults());
+
+			writeContentsToFile(gson.toJson(config));
+
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public void modifyConfig(String id, Config conf){
+		try {
+			String content = readJsonFile();
+
+			var config = gson.fromJson(content, mapType);
+			config.replace(id, conf);
 
 			writeContentsToFile(gson.toJson(config));
 
