@@ -7,16 +7,18 @@ import java.sql.Statement;
 
 public class Database {
 	private static boolean isInitialized = false;
+	private String connUri = "jdbc:sqlite:app.db";
 	private Connection conn;
+	
 	public void initialize(){
 		try {
 			if (!isInitialized) {
-				conn = DriverManager.getConnection("jdbc:sqlite:app.db");
+				conn = DriverManager.getConnection(connUri);
 				Statement stmt = conn.createStatement();
 				stmt.execute("CREATE TABLE IF NOT EXISTS levels (" +
-					"  userId varchar(20) primary key unique," +
-					"  level integer," +
-					"  xp integer" +
+					"  userId varchar(20) primary key unique not null," +
+					"  level integer not null," +
+					"  xp integer not null" +
 					")"
 				);
 				stmt.close();
@@ -24,6 +26,14 @@ public class Database {
 			}
 		} catch (SQLException e){
 			e.printStackTrace();
+		}
+	}
+
+	public Connection getConnection(){
+		try {
+			return conn == null ? DriverManager.getConnection(connUri) : conn;
+		} catch (SQLException e){
+			return null;
 		}
 	}
 }

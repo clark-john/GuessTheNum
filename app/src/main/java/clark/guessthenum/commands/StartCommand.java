@@ -6,12 +6,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import clark.guessthenum.ConfigManager;
 import clark.guessthenum.db.Database;
+import clark.guessthenum.db.Leveling;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class StartCommand extends Command {
 	private final Random r;
 	private final AtomicInteger attempts = new AtomicInteger();
 	private final ConfigManager config;
+	private Leveling level;
 
 	private int correctNumber;
 
@@ -19,6 +21,7 @@ public class StartCommand extends Command {
 
 	private boolean numberGenerated = false;
 	private boolean isFinished = true;
+	private boolean gotCorrect = false;
 
 	public StartCommand(){
 		super("start");
@@ -28,6 +31,7 @@ public class StartCommand extends Command {
 
 	@Override
 	public void handle(MessageReceivedEvent event, List<String> args, Database db) {
+		level = new Leveling(db);
 		var conf = config.loadFromGuildId(event.getGuild().getId());
 
 		if (conf.guessingChannelId == null) {
@@ -80,6 +84,7 @@ public class StartCommand extends Command {
 					sendMessage(event, "Higher :arrow_up:", channelId);
 				} else {
 					sendMessage(event, "Correct! You got it :white_check_mark:", channelId);
+					gotCorrect = true;
 					isFinished = true;
 				}
 			} else {
@@ -87,11 +92,27 @@ public class StartCommand extends Command {
 				isFinished = true;
 			}
 
+			// increase level of any user
+
+			String userId = event.getAuthor().getId();
+			boolean isLeveledUp = false;
+
+			if (!gotCorrect) {
+				isLeveledUp = level.increaseXp(userId, 3);
+			} else {
+				isLeveledUp = level.increaseXp(userId, 10);
+			}
+
+			if (isLeveledUp) {
+				level.sendLevelupMessage(event, channelId);
+			}
+
 			if (isFinished) {
 				setMessageMode(false);
 				numberGenerated = false;
 				channelId = null;
 				attempts.set(conf.attempts);
+				gotCorrect = false;
 				return;
 			}
 		}

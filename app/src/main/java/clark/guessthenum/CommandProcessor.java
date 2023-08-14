@@ -3,6 +3,7 @@ package clark.guessthenum;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import clark.guessthenum.commands.Command;
@@ -29,17 +30,22 @@ public class CommandProcessor {
 			args = new ArrayList<String>(rawArgs).subList(1, rawArgs.size());
 		}
 
+		Command comm;
+
+		Predicate<? super Command> pred;
+
 		if (msgmode == null) {
-			ls = str.filter(x -> (prefix + x.name).equals(rawArgs.get(0))).toList();
+			pred = x -> (prefix + x.name).equals(rawArgs.get(0));
 		} else {
-			ls = str.filter(x -> x.name.equals(msgmode)).toList();
+			pred = x -> x.name.equals(msgmode);
 		}
+		comm = str.filter(pred).findFirst().orElse(null);
 		
-		if (ls.size() == 0) {
+		if (comm == null) {
 			return;
 		}
 
-		ls.get(0).handle(event, args, db);
+		comm.handle(event, args, db);
 	}
 	
 	public CommandProcessor(String prefix){
