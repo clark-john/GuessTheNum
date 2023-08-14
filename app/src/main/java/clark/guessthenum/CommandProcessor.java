@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import clark.guessthenum.commands.Command;
+import clark.guessthenum.db.Database;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandProcessor {
 	private String prefix;
 	private ArrayList<Command> commands = new ArrayList<>();
 	private ContextManager ctx;
+	private Database db;
 
 	public void process(MessageReceivedEvent event){
 		String text = event.getMessage().getContentStripped();
@@ -37,15 +39,21 @@ public class CommandProcessor {
 			return;
 		}
 
-		ls.get(0).handle(event, args);
+		ls.get(0).handle(event, args, db);
 	}
+	
 	public CommandProcessor(String prefix){
 		this.prefix = prefix;
 		ctx = new ContextManager();
 	}
+
+	// pre process methods
 	public void setCommands(Command... comms){
 		for (Command comm : comms){
 			commands.add(comm);
 		}
+	}
+	public void provideDb(Database db){
+		this.db = db;
 	}
 }

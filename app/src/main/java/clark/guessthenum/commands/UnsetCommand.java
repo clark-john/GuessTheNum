@@ -7,10 +7,10 @@ import clark.guessthenum.db.Database;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class ChannelCommand extends AdminCommand {
+public class UnsetCommand extends AdminCommand {
 	private ConfigManager config;
-	public ChannelCommand(){
-		super("channel");
+	public UnsetCommand(){
+		super("unset");
 		config = new ConfigManager();
 	}
 
@@ -28,9 +28,9 @@ public class ChannelCommand extends AdminCommand {
 				String id = event.getGuild().getId();
 				var conf = config.loadFromGuildId(id);
 				TextChannel tchan = channels.get(0);
-				conf.guessingChannelId = tchan.getId();
+				conf.guessingChannelId = null;
 				config.modifyConfig(id, conf);
-				sendMessage(event, "Guessing channel successfully set to " + tchan.getAsMention() + " :white_check_mark:");
+				sendMessage(event, "Successfully unset " + tchan.getAsMention() + " as a guessing channel :white_check_mark:");
 			} else {
 				sendMessage(event, "Please provide an argument for a channel name with a hashtag");
 			}			

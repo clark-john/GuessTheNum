@@ -5,18 +5,20 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import clark.guessthenum.ConfigManager;
+import clark.guessthenum.db.Database;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class StartCommand extends Command {
 	private final Random r;
-	private final AtomicInteger attempts = new AtomicInteger(10);
+	private final AtomicInteger attempts = new AtomicInteger();
 	private final ConfigManager config;
-	
+
 	private int correctNumber;
 
 	private Long channelId;
 
 	private boolean numberGenerated = false;
+	private boolean isFinished = true;
 
 	public StartCommand(){
 		super("start");
@@ -25,7 +27,7 @@ public class StartCommand extends Command {
 	}
 
 	@Override
-	public void handle(MessageReceivedEvent event, List<String> args) {
+	public void handle(MessageReceivedEvent event, List<String> args, Database db) {
 		var conf = config.loadFromGuildId(event.getGuild().getId());
 
 		if (conf.guessingChannelId == null) {
@@ -39,7 +41,9 @@ public class StartCommand extends Command {
 
 		if (!numberGenerated) {
 			correctNumber = r.nextInt(conf.minimumValue, conf.maximumValue);
+			attempts.set(conf.attempts);
 			numberGenerated = true;
+			isFinished = false;
 		}
 
 		if (!isMessageMode()) {
@@ -67,6 +71,8 @@ public class StartCommand extends Command {
 				return;
 			}
 
+			attempts.decrementAndGet();
+
 			if (attempts.get() > 0) {			
 				if (number > correctNumber) {
 					sendMessage(event, "Lower :arrow_down:", channelId);
@@ -74,23 +80,21 @@ public class StartCommand extends Command {
 					sendMessage(event, "Higher :arrow_up:", channelId);
 				} else {
 					sendMessage(event, "Correct! You got it :white_check_mark:", channelId);
-					finish();
-					return;
+					isFinished = true;
 				}
 			} else {
 				sendMessage(event, "Game over. Better luck next time. The number is " + correctNumber);
-				finish();
-				return;
+				isFinished = true;
 			}
 
-			attempts.decrementAndGet();
+			if (isFinished) {
+				setMessageMode(false);
+				numberGenerated = false;
+				channelId = null;
+				attempts.set(conf.attempts);
+				return;
+			}
 		}
-	}
-
-	private void finish(){
-		setMessageMode(false);
-		numberGenerated = false;
-		channelId = null;
 	}
 
 	private boolean isNumber(String s){

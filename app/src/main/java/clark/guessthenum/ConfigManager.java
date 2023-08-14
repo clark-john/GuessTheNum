@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class ConfigManager {
@@ -16,7 +17,11 @@ public class ConfigManager {
 	private final TypeToken<Map<String, Config>> mapType = new TypeToken<>(){};
 
 	public ConfigManager(){
-		gson = GetGson.get();
+		gson = new GsonBuilder()
+			.setPrettyPrinting()
+			.serializeNulls()
+			.disableInnerClassSerialization()
+			.create();
 	}
 
 	private String readJsonFile() throws Exception {

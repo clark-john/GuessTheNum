@@ -3,6 +3,7 @@ package clark.guessthenum.commands;
 import java.util.List;
 
 import clark.guessthenum.ContextManager;
+import clark.guessthenum.db.Database;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public abstract class Command {
@@ -15,7 +16,7 @@ public abstract class Command {
 	}
 	
 	// abstract methods
-	public abstract void handle(MessageReceivedEvent event, List<String> args);
+	public abstract void handle(MessageReceivedEvent event, List<String> args, Database db);
 
 	// instance methods
 	public void setMessageMode(boolean b){
