@@ -30,6 +30,8 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.10.1'
 	// sqlite jdbc
 	implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
+	// https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-core
+	implementation 'org.xhtmlrenderer:flying-saucer-core:9.1.22'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

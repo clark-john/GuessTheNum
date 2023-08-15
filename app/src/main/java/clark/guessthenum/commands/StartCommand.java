@@ -100,7 +100,7 @@ public class StartCommand extends Command {
 			if (!gotCorrect) {
 				isLeveledUp = level.increaseXp(userId, 3);
 			} else {
-				isLeveledUp = level.increaseXp(userId, 10);
+				isLeveledUp = level.increaseXp(userId, 30 - attempts.get() > 8 ? 0 : 3 * ((conf.attempts - 1) - attempts.get()));
 			}
 
 			if (isLeveledUp) {
